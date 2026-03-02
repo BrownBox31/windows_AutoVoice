@@ -1,0 +1,47 @@
+# ============================================================
+# AutoVoice v2.1.0 - Python dependencies
+# ============================================================
+#
+# IMPORTANT — install in this order on Windows:
+#
+#   1. pip install --upgrade pip setuptools wheel packaging
+#   2. pip install torch==2.3.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cpu
+#   3. pip install -r requirements.txt
+#   4. pip install -e .
+#
+# Or just run: scripts\setup.bat
+# ============================================================
+
+# --- Audio processing ---
+librosa>=0.10.0
+soundfile>=0.12.1
+numpy>=1.21.0,<2.0.0
+scipy>=1.7.0
+
+# --- Audio encoding / FFmpeg bundled ---
+imageio-ffmpeg>=0.5.0
+lameenc>=1.6.0
+
+# --- Microphone recording (PortAudio bundled on Windows) ---
+sounddevice>=0.4.6
+
+# --- Deep learning (CPU-only) ---
+# Install BEFORE this file with:
+#   pip install torch==2.3.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cpu
+torch>=2.3.1
+torchaudio>=2.3.1
+
+# --- Speech enhancement (pure Python, no Rust, no MSVC) ---
+noisereduce>=3.0.0
+
+# --- Speech-to-text ---
+openai-whisper>=20231117
+
+# --- Mitsubishi PLC (SLMP / MC Protocol over Ethernet) ---
+pymcprotocol>=3.0.3
+
+# --- REST API (optional — only needed if running the server) ---
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart
+httpx>=0.27.0
