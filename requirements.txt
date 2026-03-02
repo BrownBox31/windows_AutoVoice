@@ -38,7 +38,7 @@ noisereduce>=3.0.0
 openai-whisper>=20231117
 
 # --- Mitsubishi PLC (SLMP / MC Protocol over Ethernet) ---
-pymcprotocol>=3.0.3
+pymcprotocol>=0.3.0
 
 # --- REST API (optional — only needed if running the server) ---
 fastapi>=0.110.0
