@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environment — never copy into image
+venv/
+.venv/
+env/
+
+# Whisper model cache — baked in at build time, don't copy from host
+.cache/
+
+# Data files — mounted as volumes at runtime
+data/output/*
+data/samples/*
+!data/output/.gitkeep
+!data/samples/.gitkeep
+
+# Temp uploads
+uploads/
+tmp_uploads/
+
+# Tests
+tests/
+
+# Docs / scripts (not needed in image)
+docs/
+scripts/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Env files with secrets
+.env
+# (keep .env.example — it's documentation, not secrets)

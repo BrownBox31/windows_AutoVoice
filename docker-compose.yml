@@ -1,0 +1,94 @@
+# =============================================================
+# AutoVoice — Docker Compose
+# =============================================================
+#
+# Start everything:
+#   docker-compose up -d
+#
+# View logs:
+#   docker-compose logs -f autovoice
+#
+# Stop:
+#   docker-compose down
+#
+# Rebuild after code changes:
+#   docker-compose up -d --build
+# =============================================================
+
+version: "3.9"
+
+services:
+
+  autovoice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Change to tiny/base/small/medium/large for different accuracy/speed
+        WHISPER_MODEL: turbo
+    image: autovoice:2.1.0
+    container_name: autovoice
+
+    # ── Ports ────────────────────────────────────────────────
+    ports:
+      - "8000:8000"
+
+    # ── Environment ──────────────────────────────────────────
+    # Override any setting from config.py here.
+    # All values can also go in a .env file (see .env.example).
+    environment:
+      # PLC settings
+      PLC_HOST:            ${PLC_HOST:-192.168.3.39}
+      PLC_PORT:            ${PLC_PORT:-3000}
+      PART_BIT_DEVICE:     ${PART_BIT_DEVICE:-M0}
+      ENGINE_WORD_DEVICE:  ${ENGINE_WORD_DEVICE:-D100}
+      MODEL_WORD_DEVICE:   ${MODEL_WORD_DEVICE:-D101}
+
+      # Whisper
+      WHISPER_MODEL:       ${WHISPER_MODEL:-turbo}
+
+      # Denoising
+      USE_NOISEREDUCE:     ${USE_NOISEREDUCE:-true}
+      PROP_DECREASE:       ${PROP_DECREASE:-0.75}
+      STATIONARY_NOISE:    ${STATIONARY_NOISE:-true}
+
+      # Recording
+      SILENCE_THRESHOLD:   ${SILENCE_THRESHOLD:-0.01}
+      SILENCE_DURATION_S:  ${SILENCE_DURATION_S:-3.0}
+      MIN_RECORD_S:        ${MIN_RECORD_S:-1.0}
+      MAX_RECORD_S:        ${MAX_RECORD_S:-120.0}
+
+      # Backend integration
+      BACKEND_URL:         ${BACKEND_URL:-http://host.docker.internal:3001/api/inspection-result}
+      BACKEND_TIMEOUT_S:   ${BACKEND_TIMEOUT_S:-30.0}
+
+      # Output
+      OUTPUT_DIR:          /app/data/output
+
+      # CORS — restrict in production
+      CORS_ORIGINS:        ${CORS_ORIGINS:-*}
+
+    # ── Volumes ───────────────────────────────────────────────
+    # Mount local data/ directory so output files are accessible
+    # on the host machine without copying from the container.
+    volumes:
+      - ./data/output:/app/data/output
+      - ./data/samples:/app/data/samples
+
+    # ── Network ───────────────────────────────────────────────
+    # host.docker.internal lets the container reach services
+    # running on the host machine (e.g. your Node.js backend on :3001).
+    # On Linux, extra_hosts maps the name to host-gateway.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    # ── Restart policy ────────────────────────────────────────
+    restart: unless-stopped
+
+    # ── Health check ─────────────────────────────────────────
+    healthcheck:
+      test:     ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout:  10s
+      retries:  3
+      start_period: 90s   # give Whisper time to load on first start
